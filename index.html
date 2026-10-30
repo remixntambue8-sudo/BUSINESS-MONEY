@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#071426">
+  <title>BUSINESS MONEY</title>
+  <style>
+    *{box-sizing:border-box}
+    :root{--bg:#071426;--panel:#102b50;--panel2:#173961;--gold:#f5c400;--text:#fff;--muted:#c8d4e3;--line:#29496d}
+    body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+    header{background:var(--panel);padding:22px 14px;text-align:center;border-bottom:3px solid var(--gold)}
+    header h1{color:var(--gold);margin:0 0 8px;font-size:27px}
+    header p{margin:0;font-size:14px}
+    main{max-width:760px;margin:auto;padding:16px}
+    .card{background:var(--panel);padding:18px;border-radius:14px;margin-bottom:16px;border:1px solid var(--line)}
+    h2{color:var(--gold);font-size:21px;margin:0 0 12px}
+    label{display:block;text-align:left;margin:12px 0 6px}
+    input,textarea{display:block;width:100%;padding:13px;border:1px solid #466487;border-radius:8px;background:var(--bg);color:#fff;font-size:16px}
+    input[type=file]{font-size:14px}
+    button,.button-link{display:inline-block;width:100%;padding:13px;border:0;border-radius:8px;margin-top:12px;font-size:15px;font-weight:bold;cursor:pointer;background:var(--gold);color:var(--bg);text-align:center;text-decoration:none}
+    button.secondary{background:#23466e;color:#fff;border:1px solid #50739b}
+    button:disabled{opacity:.55;cursor:not-allowed}
+    .hidden{display:none!important}
+    .status{padding:12px;border-radius:8px;background:var(--bg);margin:12px 0;overflow-wrap:anywhere;line-height:1.5}
+    .menu-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .menu-item{background:var(--panel2);padding:15px 10px;border-radius:10px;text-align:center;border:1px solid #41658c}
+    .menu-item strong{display:block;margin-bottom:7px;color:var(--gold)}
+    .menu-item p,.small{font-size:12px;color:var(--muted);line-height:1.6}
+    .menu-item p{margin:0}
+    .small{margin:10px 0}
+    .profile{text-align:center;margin:18px 0}
+    #profilePhoto,#photoPlaceholder{width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);margin:auto}
+    #photoPlaceholder{background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:45px}
+    .photo-label{display:inline-block;background:var(--gold);color:var(--bg);padding:12px 18px;border-radius:8px;font-weight:bold;cursor:pointer;margin-top:12px}
+    .notice{border-left:4px solid var(--gold);padding:10px 12px;background:#0a1d34;border-radius:6px;font-size:13px;line-height:1.55;color:var(--muted)}
+    .topline{display:flex;gap:8px;flex-wrap:wrap}
+    .topline button{flex:1;min-width:130px}
+    footer{text-align:center;color:#aabbd0;padding:20px;font-size:12px}
+    @media(max-width:380px){.menu-grid{grid-template-columns:1fr}main{padding:11px}}
+  </style>
+</head>
+<body>
+<header>
+  <h1>BUSINESS MONEY</h1>
+  <p>Construisons nos opportunités ensemble</p>
+</header>
+
+<main>
+  <div id="message" class="status" role="status" aria-live="polite">Chargement de l'application...</div>
+
+  <section id="authSection" class="card hidden">
+    <h2>Mon compte</h2>
+    <p class="small">Crée ton compte ou connecte-toi pour accéder à ton espace personnel.</p>
+    <label for="fullname">Nom complet</label>
+    <input id="fullname" type="text" placeholder="Ton nom complet" autocomplete="name">
+    <label for="email">Adresse e-mail</label>
+    <input id="email" type="email" placeholder="exemple@email.com" autocomplete="email">
+    <label for="password">Mot de passe</label>
+    <input id="password" type="password" placeholder="Minimum 6 caractères" autocomplete="current-password">
+    <button id="signupBtn" type="button">Créer mon compte</button>
+    <button id="loginBtn" class="secondary" type="button">Me connecter</button>
+    <button id="googleBtn" class="secondary" type="button">Continuer avec Google</button>
+    <button id="resetBtn" class="secondary" type="button">Mot de passe oublié ?</button>
+    <p class="small">Ton compte est géré par Firebase Authentication. Ne partage jamais ton mot de passe.</p>
+  </section>
+
+  <section id="accountSection" class="card hidden">
+    <h2>Mon espace personnel</h2>
+    <p>Bienvenue dans ton compte !</p>
+    <div class="profile">
+      <img id="profilePhoto" alt="Photo de profil" class="hidden">
+      <div id="photoPlaceholder">👤</div>
+      <label class="photo-label" for="photoInput">📸 Choisir ma photo</label>
+      <input type="file" id="photoInput" accept="image/*" hidden>
+      <button id="savePhotoBtn" type="button" disabled>Enregistrer ma photo</button>
+      <p id="photoMessage" class="small">Choisis une photo, puis enregistre-la.</p>
+    </div>
+    <p id="userName"></p>
+    <p id="userEmail" class="small"></p>
+    <button id="logoutBtn" class="secondary" type="button">Me déconnecter</button>
+  </section>
+
+  <!-- Tous les menus privés restent inaccessibles sans connexion. -->
+  <section id="servicesSection" class="card hidden">
+    <h2>Nos services</h2>
+    <p class="small">Accède aux différents espaces de BUSINESS MONEY.</p>
+    <div class="menu-grid">
+      <div class="menu-item"><strong>🎮 Jeux partenaires</strong><p>Accès aux jeux uniquement après intégration d'un opérateur autorisé.</p><button type="button" data-menu="games">Consulter</button></div>
+      <div class="menu-item"><strong>🪙 Pile ou Face</strong><p>Jeu gratuit, sans mise ni argent réel.</p><button type="button" data-menu="coin">Jouer gratuitement</button></div>
+      <div class="menu-item"><strong>🛡️ Mon compte</strong><p>Consulte l'état de ta connexion et tes informations.</p><button type="button" data-menu="verification">Consulter</button></div>
+      <div class="menu-item"><strong>📞 Service client</strong><p>Contacte l'équipe BUSINESS MONEY.</p><button type="button" data-menu="support">Contacter</button></div>
+      <div class="menu-item"><strong>🤝 Affiliation</strong><p>Découvre les conditions du programme partenaire.</p><button type="button" data-menu="affiliate">Découvrir</button></div>
+      <div class="menu-item"><strong>📁 Mes fichiers</strong><p>Choisis un document ou une image sur ton téléphone.</p><button type="button" data-menu="files">Ouvrir</button></div>
+    </div>
+  </section>
+
+  <section id="filesSection" class="card hidden">
+    <h2>📁 Mes fichiers</h2>
+    <p class="small">Sélectionne une image ou un document. Le fichier reste sur ton téléphone : cette fonction ne l'envoie pas sur Internet.</p>
+    <label for="fileInput">Choisir un fichier</label>
+    <input id="fileInput" type="file" accept="image/*,.pdf,.doc,.docx">
+    <div id="fileInfo" class="status">Aucun fichier sélectionné.</div>
+    <img id="filePreview" class="hidden" alt="Aperçu du fichier" style="width:100%;max-height:300px;object-fit:contain;border-radius:8px;margin-top:10px">
+  </section>
+
+  <section id="detailSection" class="card hidden">
+    <h2 id="detailTitle">Détails</h2>
+    <div id="detailContent"></div>
+    <button id="closeDetail" class="secondary" type="button">Fermer</button>
+  </section>
+
+  <section class="card">
+    <h2>À propos de BUSINESS MONEY</h2>
+    <p class="small">Notre objectif est de réunir des services numériques, des possibilités de partenariat et des divertissements dans un même espace.</p>
+    <p class="notice">Les jeux avec argent réel, dépôts, retraits et commissions ne sont pas activés. Ils nécessitent des autorisations applicables, un prestataire agréé, des contrats et un système serveur sécurisé. Ne verse aucun argent à une personne prétendant activer ces fonctions dans cette application.</p>
+  </section>
+</main>
+
+<footer>BUSINESS MONEY © 2026<br>Construisons nos opportunités ensemble.</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+"use strict";
+
+/* Configuration Firebase existante du projet BUSINESS MONEY. */
+const firebaseConfig = {
+  apiKey: "AIzaSyD-P7ui-yXEQSJmUvD3hdeWtXN8uBspfFM",
+  authDomain: "business---money.firebaseapp.com",
+  projectId: "business---money",
+  storageBucket: "business---money.firebasestorage.app",
+  messagingSenderId: "460825846073",
+  appId: "1:460825846073:web:552ff34fa9750e7349c8e8",
+  measurementId: "G-PR7QMG38TB"
+};
+
+const $ = id => document.getElementById(id);
+let auth = null, db = null, currentUser = null;
+let selectedPhotoFile = null;
+let profilePreviewUrl = null;
+let filePreviewUrl = null;
+let authReady = false;
+
+function showMessage(message) {
+  $("message").textContent = message;
+  $("message").classList.remove("hidden");
+}
+function friendlyError(error) {
+  const messages = {
+    "auth/email-already-in-use":"Cette adresse e-mail possède déjà un compte. Connecte-toi.",
+    "auth/invalid-email":"L'adresse e-mail n'est pas valide.",
+    "auth/weak-password":"Choisis un mot de passe d'au moins 6 caractères.",
+    "auth/invalid-credential":"E-mail ou mot de passe incorrect.",
+    "auth/user-not-found":"Aucun compte trouvé avec cette adresse e-mail.",
+    "auth/wrong-password":"Mot de passe incorrect.",
+    "auth/too-many-requests":"Trop de tentatives. Réessaie plus tard.",
+    "auth/network-request-failed":"Problème de connexion Internet.",
+    "auth/unauthorized-domain":"Ajoute ce domaine dans Firebase Authentication > Authorized domains.",
+    "auth/operation-not-allowed":"Active cette méthode de connexion dans Firebase Authentication.",
+    "permission-denied":"Accès refusé par les règles de sécurité Firestore."
+  };
+  return messages[error.code] || ("Erreur : " + (error.message || error.code || "inconnue"));
+}
+function setAuthBusy(busy) {
+  ["signupBtn","loginBtn","googleBtn","resetBtn"].forEach(id => $(id).disabled = busy);
+}
+function showDefaultPhoto() {
+  $("profilePhoto").removeAttribute("src");
+  $("profilePhoto").classList.add("hidden");
+  $("photoPlaceholder").classList.remove("hidden");
+}
+function showPhoto(src) {
+  if (!src) return showDefaultPhoto();
+  $("profilePhoto").src = src;
+  $("profilePhoto").classList.remove("hidden");
+  $("photoPlaceholder").classList.add("hidden");
+}
+function hidePrivateAreas() {
+  ["accountSection","servicesSection","filesSection","detailSection"].forEach(id => $(id).classList.add("hidden"));
+}
+function showPrivateAreas() {
+  ["accountSection","servicesSection","filesSection"].forEach(id => $(id).classList.remove("hidden"));
+}
+function requireSignedIn() {
+  if (!currentUser) {
+    showMessage("Connecte-toi pour accéder à cet espace.");
+    hidePrivateAreas();
+    $("authSection").classList.remove("hidden");
+    return false;
+  }
+  return true;
+}
+
+try {
+  firebase.initializeApp(firebaseConfig);
+  auth = firebase.auth();
+  db = firebase.firestore();
+  $("authSection").classList.remove("hidden");
+  showMessage("Firebase est initialisé. Vérification de la connexion...");
+
+  auth.onAuthStateChanged(async user => {
+    currentUser = user;
+    authReady = true;
+    selectedPhotoFile = null;
+    $("photoInput").value = "";
+    $("savePhotoBtn").disabled = true;
+    if (user) {
+      $("authSection").classList.add("hidden");
+      showPrivateAreas();
+      $("userName").textContent = "Nom : " + (user.displayName || "Utilisateur");
+      $("userEmail").textContent = "E-mail : " + (user.email || "Non renseigné");
+      $("photoMessage").textContent = "Chargement de ta photo de profil...";
+      await loadProfilePhoto(user);
+      if (currentUser && currentUser.uid === user.uid) showMessage("Connexion réussie. Ton espace personnel est accessible.");
+    } else {
+      $("authSection").classList.remove("hidden");
+      hidePrivateAreas();
+      showDefaultPhoto();
+      $("photoMessage").textContent = "Connecte-toi pour gérer ta photo.";
+      showMessage("Tu peux créer un compte ou te connecter.");
+    }
+  });
+} catch (error) {
+  showMessage("Impossible d'initialiser Firebase : " + error.message);
+}
+
+$("signupBtn").addEventListener("click", async () => {
+  if (!auth) return showMessage("Firebase n'est pas disponible.");
+  const name = $("fullname").value.trim();
+  const email = $("email").value.trim();
+  const password = $("password").value;
+  if (!name || !email || !password) return showMessage("Remplis ton nom, ton e-mail et ton mot de passe.");
+  if (password.length < 6) return showMessage("Le mot de passe doit contenir au moins 6 caractères.");
+  setAuthBusy(true);
+  try {
+    const result = await auth.createUserWithEmailAndPassword(email, password);
+    await result.user.updateProfile({displayName:name});
+    await db.collection("profiles").doc(result.user.uid).set({
+      name, email, createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    }, {merge:true});
+    $("password").value = "";
+    showMessage("Compte créé avec succès ! Bienvenue dans BUSINESS MONEY.");
+  } catch (error) { showMessage(friendlyError(error)); }
+  finally { setAuthBusy(false); }
+});
+
+$("loginBtn").addEventListener("click", async () => {
+  const email = $("email").value.trim(), password = $("password").value;
+  if (!email || !password) return showMessage("Entre ton adresse e-mail et ton mot de passe.");
+  setAuthBusy(true);
+  try {
+    await auth.signInWithEmailAndPassword(email,password);
+    $("password").value = "";
+  } catch (error) { showMessage(friendlyError(error)); }
+  finally { setAuthBusy(false); }
+});
+
+$("googleBtn").addEventListener("click", async () => {
+  if (!auth) return showMessage("Firebase n'est pas disponible.");
+  setAuthBusy(true);
+  try {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    await auth.signInWithRedirect(provider);
+  } catch (error) { showMessage(friendlyError(error)); setAuthBusy(false); }
+});
+
+$("resetBtn").addEventListener("click", async () => {
+  const email = $("email").value.trim();
+  if (!email) return showMessage("Entre d'abord ton adresse e-mail.");
+  try {
+    await auth.sendPasswordResetEmail(email);
+    showMessage("Si cette adresse est enregistrée, un e-mail de réinitialisation a été envoyé.");
+  } catch (error) { showMessage(friendlyError(error)); }
+});
+
+$("logoutBtn").addEventListener("click", async () => {
+  try {
+    await auth.signOut();
+    showMessage("Tu es déconnecté. Les menus privés sont maintenant masqués.");
+    window.scrollTo({top:0,behavior:"smooth"});
+  } catch (error) { showMessage(friendlyError(error)); }
+});
+
+async function loadProfilePhoto(user) {
+  try {
+    const snap = await db.collection("profiles").doc(user.uid).get();
+    const data = snap.exists ? snap.data() : {};
+    showPhoto(data && data.photoData ? data.photoData : "");
+    $("photoMessage").textContent = data && data.photoData
+      ? "Ta photo de profil est enregistrée dans ton compte."
+      : "Aucune photo enregistrée. Choisis une photo pour commencer.";
+  } catch (error) {
+    showDefaultPhoto();
+    $("photoMessage").textContent = "Impossible de charger la photo. Vérifie les règles Firestore et ta connexion.";
+  }
+}
+
+function compressPhoto(file) {
+  return new Promise((resolve,reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const maxSide = 320;
+        const scale = Math.min(1,maxSide/Math.max(img.naturalWidth,img.naturalHeight));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1,Math.round(img.naturalWidth*scale));
+        canvas.height = Math.max(1,Math.round(img.naturalHeight*scale));
+        canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);
+        let data = canvas.toDataURL("image/jpeg",0.68);
+        if (data.length > 240000) {
+          const smaller = document.createElement("canvas");
+          smaller.width = Math.max(1,Math.round(canvas.width*.7));
+          smaller.height = Math.max(1,Math.round(canvas.height*.7));
+          smaller.getContext("2d").drawImage(canvas,0,0,smaller.width,smaller.height);
+          data = smaller.toDataURL("image/jpeg",0.55);
+        }
+        URL.revokeObjectURL(objectUrl);
+        if (data.length > 240000) return reject(new Error("Photo trop lourde. Choisis une autre image."));
+        resolve(data);
+      } catch(e) { URL.revokeObjectURL(objectUrl); reject(e); }
+    };
+    img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error("Impossible de lire cette image.")); };
+    img.src = objectUrl;
+  });
+}
+
+$("photoInput").addEventListener("change", event => {
+  const file = event.target.files && event.target.files[0];
+  selectedPhotoFile = null;
+  $("savePhotoBtn").disabled = true;
+  if (!file) return $("photoMessage").textContent = "Aucune nouvelle photo sélectionnée.";
+  if (!file.type.startsWith("image/")) {
+    $("photoMessage").textContent = "Choisis un fichier image.";
+    event.target.value = "";
+    return;
+  }
+  if (file.size > 12*1024*1024) {
+    $("photoMessage").textContent = "La photo dépasse 12 Mo. Choisis une image plus petite.";
+    event.target.value = "";
+    return;
+  }
+  selectedPhotoFile = file;
+  if (profilePreviewUrl) URL.revokeObjectURL(profilePreviewUrl);
+  profilePreviewUrl = URL.createObjectURL(file);
+  showPhoto(profilePreviewUrl);
+  $("photoMessage").textContent = "Photo choisie. Appuie sur « Enregistrer ma photo ».";
+  $("savePhotoBtn").disabled = false;
+});
+
+$("savePhotoBtn").addEventListener("click", async () => {
+  if (!requireSignedIn()) return;
+  if (!selectedPhotoFile) return $("photoMessage").textContent = "Choisis d'abord une photo.";
+  const button = $("savePhotoBtn");
+  button.disabled = true;
+  button.textContent = "Enregistrement...";
+  try {
+    const photoData = await compressPhoto(selectedPhotoFile);
+    await db.collection("profiles").doc(currentUser.uid).set({
+      name:currentUser.displayName || "Utilisateur",
+      email:currentUser.email || "",
+      photoData,
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    },{merge:true});
+    showPhoto(photoData);
+    selectedPhotoFile = null;
+    $("photoInput").value = "";
+    if (profilePreviewUrl) URL.revokeObjectURL(profilePreviewUrl);
+    profilePreviewUrl = null;
+    $("photoMessage").textContent = "Photo enregistrée dans ton profil. Elle sera rechargée à ta prochaine connexion.";
+    showMessage("Ta photo de profil est enregistrée.");
+  } catch(error) {
+    $("photoMessage").textContent = friendlyError(error) + " Vérifie aussi les règles Firestore.";
+  } finally {
+    button.disabled = !selectedPhotoFile;
+    button.textContent = "Enregistrer ma photo";
+  }
+});
+
+const menuDetails = {
+  games:{
+    title:"🎮 Jeux partenaires",
+    html:'<p class="small">L’accès à un jeu avec argent réel exige un opérateur autorisé, un contrat d’intégration, la vérification de l’âge et de l’identité, ainsi qu’un système sécurisé de dépôt et de retrait.</p><p class="notice">Aucun jeu d’argent réel ni dépôt n’est activé ici. Nous n’affichons pas de faux solde et ne promettons aucun gain.</p>'
+  },
+  coin:{
+    title:"🪙 PILE OU FACE",
+    html:'<p class="small">Un jeu gratuit pour s’amuser, sans mise et sans argent réel.</p><button id="flipCoinBtn" type="button">Lancer la pièce</button><div id="coinResult" class="status" aria-live="polite">Prêt à jouer.</div>'
+  },
+  verification:{
+    title:"🛡️ Vérification du compte",
+    html:'<p class="small">Ton compte est connecté avec Firebase Authentication.</p><p class="small">L’adresse e-mail affichée dans ton espace personnel est celle de ta session.</p>'
+  },
+  support:{
+    title:"📞 Service client",
+    html:'<p class="small">Le contact officiel du service client doit être configuré par l’administrateur avant publication. Ne communique jamais ton mot de passe ou un code de vérification à quelqu’un.</p>'
+  },
+  affiliate:{
+    title:"🤝 Programme d'affiliation",
+    html:'<p class="small">Le programme de parrainage et le paiement des commissions nécessitent des règles écrites, un suivi serveur des inscriptions validées, un moyen de paiement et les vérifications légales applicables.</p><p class="notice">Aucune commission n’est calculée ni versée automatiquement dans cette version. Nous ne prétendons pas qu’un parrainage est rémunéré tant que le système réel n’est pas relié et testé.</p>'
+  },
+  files:{
+    title:"📁 Mes fichiers",
+    html:'<p class="small">La zone « Mes fichiers » se trouve dans ton espace connecté. Tu peux y sélectionner un fichier depuis ton téléphone. Il n’est pas téléversé sur un serveur.</p>'
+  }
+};
+
+document.querySelectorAll("[data-menu]").forEach(button => {
+  button.addEventListener("click", () => {
+    if (!requireSignedIn()) return;
+    const item = menuDetails[button.dataset.menu];
+    if (!item) return;
+    $("detailTitle").textContent = item.title;
+    $("detailContent").innerHTML = item.html;
+    $("detailSection").classList.remove("hidden");
+    if (button.dataset.menu === "coin") {
+      $("flipCoinBtn").addEventListener("click", () => {
+        $("coinResult").textContent = Math.random() < .5 ? "🪙 PILE !" : "🪙 FACE !";
+      });
+    }
+    $("detailSection").scrollIntoView({behavior:"smooth",block:"start"});
+  });
+});
+$("closeDetail").addEventListener("click",()=>$("detailSection").classList.add("hidden"));
+
+$("fileInput").addEventListener("change",event => {
+  if (!requireSignedIn()) { event.target.value=""; return; }
+  const file = event.target.files && event.target.files[0];
+  if (filePreviewUrl) { URL.revokeObjectURL(filePreviewUrl); filePreviewUrl=null; }
+  $("filePreview").classList.add("hidden");
+  if (!file) return $("fileInfo").textContent = "Aucun fichier sélectionné.";
+  if (file.size > 10*1024*1024) {
+    $("fileInfo").textContent = "Le fichier dépasse la limite de 10 Mo.";
+    event.target.value="";
+    return;
+  }
+  $("fileInfo").textContent = "Fichier : " + file.name + " — Taille : " + (file.size/1024).toFixed(1) + " Ko. Fichier conservé sur ton téléphone.";
+  if (file.type.startsWith("image/")) {
+    filePreviewUrl = URL.createObjectURL(file);
+    $("filePreview").src = filePreviewUrl;
+    $("filePreview").classList.remove("hidden");
+  }
+});
+</script>
+</body>
+</html>
